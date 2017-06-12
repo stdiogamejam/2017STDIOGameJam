@@ -1,0 +1,5 @@
+(This file is just an example for game jammers to look at.)
+
+This file is added by anyone who contributes Pull Request to this project that were accepted by the original team that made this game.
+
+Please submit PRs to the original team's repo, not the STDIOGameJam. The original team can then submit a PR to the STDIOGameJam repo to show that they have accepted the change.

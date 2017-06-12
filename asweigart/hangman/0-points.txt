@@ -1,0 +1,5 @@
+(This file is just an example for game jammers to look at.)
+
+Only the judges may place a "X-points.txt" file in each folder. The presence of this file indicates the judges have finished judging it, and how many points they awarded (along with a breakdown of how the points were scored.) Teams should contact the judges on twitter (@STDIOGameJam) or al@themade.org to request re-scoring (though keep in mind, the judges may be busy during the game jam).
+
+This game got 0 points because it is just an example for the game jam.
