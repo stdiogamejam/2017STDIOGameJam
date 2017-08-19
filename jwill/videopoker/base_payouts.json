@@ -1,0 +1,12 @@
+[
+  {"handType":"JacksOrBetter", "payout": 1, "label":"(Pair of) Jacks or Better"},
+  {"handType":"TwoPair", "payout": 2, "label":"Two Pair"},
+  {"handType":"ThreeOfAKind", "payout": 3, "label":"Three Of A Kind"},
+  {"handType":"Straight", "payout": 4, "label":"Straight"},
+  {"handType":"Flush", "payout": 6, "label":"Flush"},
+  {"handType":"FullHouse", "payout": 9, "label":"Full House"},
+  {"handType":"FourOfAKind", "payout": 25, "label":"Four Of A Kind"},
+  {"handType":"StraightFlush", "payout": 50, "label":"Straight Flush"},
+  {"handType":"RoyalFlush", "payout": 250, "label":"Royal Flush"}
+
+]
