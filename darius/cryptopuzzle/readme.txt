@@ -1,4 +1,6 @@
-Solve a substitution cipher. Sample run:
+Solve a substitution cipher. Tested in Python 2 and 3.
+
+Sample run:
 
     $ python cryptopuzzle.py
     Enter the encrypted puzzle, followed by a line with only a period ('.') to mark the end:
@@ -48,4 +50,5 @@ Solve a substitution cipher. Sample run:
     Do you want to quit? ('y' for yes) y
 
 The example cryptogram was created by running `make_cryptogram.py` on
-a computer with `fortune` installed.
+a computer with `fortune` installed. (But `make_cryptogram.py` only
+runs in Python 2; it depends on the `commands` module.)
