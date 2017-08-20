@@ -1,0 +1,1 @@
+Solve a substitution cipher.
