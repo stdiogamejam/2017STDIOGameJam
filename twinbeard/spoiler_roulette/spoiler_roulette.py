@@ -64,12 +64,12 @@ def main():
     # Select the next player, wrapping around if need be.
     player_index  = (player_index +1)%len(players)
     
-    # Select the next spoiler -- if we run out, also re-shuffle.
+    # Select the next spoiler -- if we run out, re-shuffle.
     spoiler_index += 1    
     if spoiler_index >= len(spoilers):
       spoiler_index = 0
       random.shuffle(spoilers)
 
-  print("\n"+players[0], "got away unspoiled!")
+  print("\nOnly "+players[0], "got away unspoiled!")
     
 if __name__=="__main__": main()
