@@ -52,3 +52,5 @@ Sample run:
 The example cryptogram was created by running `make_cryptogram.py` on
 a computer with `fortune` installed. (But `make_cryptogram.py` only
 runs in Python 2; it depends on the `commands` module.)
+
+MIT license.
