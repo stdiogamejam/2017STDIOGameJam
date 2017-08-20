@@ -14,7 +14,7 @@ def get_cryptogram():
         line = raw_input()
         if line.strip() == '.': break
         lines.append(clean(line.lower()))
-    return '\n'.join(lines)
+    return lines
 
 def clean(s):
     "Expand tabs; blank out other control characters."
@@ -32,13 +32,12 @@ def clean(s):
 
 alphabet = string.ascii_lowercase
 
-def play_puzzle(cryptogram):
-    code = ''.join(c for c in cryptogram if c.isalpha())
+def play_puzzle(lines):
+    code = ''.join(c for line in lines for c in line if c.isalpha())
     if not code:
         print "No text to decrypt!"
         return
     decoder = {c: ' ' for c in set(code)}
-    lines = cryptogram.splitlines()
 
     while True:
         used = set(decoder.values()) - set(' ')
