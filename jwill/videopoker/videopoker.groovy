@@ -23,27 +23,49 @@ SOFTWARE.*/
 
 import groovy.json.JsonSlurper
 
-
+/**
+ * Class that stores a representation of decks of cards.
+ *
+ */
 class Deck {
-    // Stores card data
+    /** File on disk that stores the definition of the cards. */
     def file = new File("cards.json")
 
+    /** Collection of all the cards in this set of decks. */
     private ArrayList cards = new ArrayList<>();
+
+    /** Number of decks to generate. */
     private int numDecks = 2;
 
-    public Deck(int numDecks) {
+    Deck(int numDecks) {
         initCards();
     }
 
-    void initCards() {
+    /** Using the numDecks variable, add the full set of cards to the cards collection that many times.
+     * The default value of numDecks is 2 so you can call this function with initCards() or initCards(<someNumber>).
+     *
+     * In Groovy, a JSON file is parsed into a collection of ArrayLists and Maps(dictionaries in Python).
+     * In an app with more space, you could wrap the representation of a card in a class.
+     * @param numDecks
+     */
+    void initCards(int numDecks = 2) {
         def deckOfCards = new JsonSlurper().parse(file)
         cards = new ArrayList()
         numDecks.times { cards.addAll(deckOfCards) }
     }
 
-    // Shuffle cards
+    /**
+     * Produces a random number under a certain value. Math.random generates a number between 0.0 and 1.0.
+     * Multiplying that by max turns it into a whole number.
+     * @param max
+     * @return an integer
+     */
     int rand(int max) { return (int) Math.floor(Math.random() * max); }
 
+    /** Shuffles the deck of cards.
+     *  Starting at the end of the cards, swap the positions of the selected card and one that
+     *  appears in the collection of cards. Do this numDecks times.
+     */
     void shuffleDecks() {
         for (int j = 0; j < numDecks; j++) {
             for (int i = (numDecks * 51); i >= 0; i--) {
@@ -53,12 +75,22 @@ class Deck {
         }
     }
 
+    /**
+     * Removes a card from the card from the collection of cards. If there are no cards left,
+     * the deck is reshuffled before returning a card.
+     * @return a (Hash)Map of a card
+     */
     Map dealCard() {
         if (cards.size() == 0)
             initCards()
         return (Map) cards.remove(0)
     }
 
+    /**
+     * Deals a number of cards
+     * @param num the number of cards to return
+     * @return an arraylist holding the cards
+     */
     ArrayList dealCards(int num) {
         ArrayList cards = new ArrayList<Map>();
         for (int i = 0; i < num; i++) {
@@ -69,10 +101,27 @@ class Deck {
 
 }
 
+/**
+ * Class that stores a representation of a poker hand. In this case, 5 cards.
+ */
 class Hand {
+    /**
+     * Holds the cards in a hand
+     */
     ArrayList<Map> cards = new ArrayList<>()
-    private int position = 0    //position to insert card
 
+    /**
+     * Position to insert the next card.
+     */
+    private int position = 0
+
+    /**
+     * Iterates through the cards and looks for one that has the replaceCard property
+     * set to true in it.
+     *
+     * This can return null.
+     * @return Map representing a playing card
+     */
     Map findCardToReplace() {
         for (Map card in cards) {
             boolean replaceCard = (boolean) card.get("replaceCard")
@@ -80,6 +129,11 @@ class Hand {
         }
     }
 
+    /**
+     * Add a card represented by a map to a hand.
+     * It attempts to replace the first card that findCardToReplace has found.
+     * @param card
+     */
     void addToHand(Map card) {
         if (cards.size() < 5) {
             card.putAll(["positionInHand": position++, "replaceCard": true])
@@ -93,11 +147,18 @@ class Hand {
         }
     }
 
+    /**
+     * Returns an integer indicating the number of cards that are flagged as replaceCard.
+     * @return
+     */
     int cardsNeeded() {
         if (cards.size() == 0) return 5
         else return cards.findAll { it.replaceCard == true }.collect { it.positionInHand }.size()
     }
 
+    /**
+     * Prints out a representation of a hand.
+     */
     void printHand() {
         println "-------"
         cards.eachWithIndex { Map entry, int i ->
@@ -108,6 +169,9 @@ class Hand {
         println "-------"
     }
 
+    /**
+     * Clears all cards from the hand, sets the position to insert the next card to 0.
+     */
     void clearCards() {
         cards.clear()
         position = 0
@@ -115,13 +179,34 @@ class Hand {
 
 }
 
+/**
+ * Class that evaluates a poker hand to see if it has won or lost
+ */
 class Evaluator {
+
+    /** Stores the payout chart and descriptions. */
     ArrayList payouts = new JsonSlurper().parse(new File("base_payouts.json"))
-    // basically this handles cards' face value
+    /**
+     * Retrieves the numeric value of each card. Groovy's collect closure tells the cards ArrayList that on every card,
+     * run the code get("value"), collect those items into a list and return it.
+     * @param cards
+     * @return
+     */
     ArrayList ordinalHandler(ArrayList<Map> cards) { cards.collect { it.get("value") } }
 
+    /**
+     * Retrieves the suit of each card. Also uses Groovy's collect closure.
+     * @param cards
+     * @return
+     */
     ArrayList suitHandler(ArrayList<Map> cards) { cards.collect { it.get("suit") } }
 
+    /**
+     * Returns the number of cards that whose values show up in the hand multiple times
+     * @param cards
+     * @param sizeToCheck the number of matches to check for.
+     * @return
+     */
     Integer checkSize(ArrayList cards, int sizeToCheck) {
         def cardsValues = ordinalHandler(cards)
         HashMap<Integer, Integer> map = new HashMap<>()
@@ -188,6 +273,13 @@ class Evaluator {
         else return false
     }
 
+    /**
+     * Cycles through all the check functions to see if the game should pay out for a win.
+     * Starts from the end of the results array to make sure the highest possible payout is used.
+     * @param hand
+     * @param round
+     * @return
+     */
     Map evaluate(Hand hand, int round) {
         def results = []
         results.addAll([checkJacksOrBetter(hand), checkTwoPair(hand), checkThreeKind(hand), checkStraight(hand), checkFlush(hand),
@@ -202,18 +294,27 @@ class Evaluator {
     }
 }
 
+/**
+ * Class where our main game logic lives.
+ */
 class VideoPoker {
+    /** Streams user input to the game. */
     Scanner scanner = new Scanner(System.in)
 
     Hand hand = new Hand()
     Deck deck = new Deck(2)
     Evaluator evaluator = new Evaluator()
+    /** Starting number of tokens */
     int tokens = 500
     int maxBet = 5
     int currentBet = 1
     int roundState = 0
+    /** When the player hits Q, this is toggled to true and the game ends. */
     boolean quitGame = false
 
+    /**
+     * Show the initialization screen and shuffle the decks.
+     */
     void init() {
         println "Welcome to Video Poker!\n"
         println(new File("how_to_play.txt").getText())
@@ -221,6 +322,10 @@ class VideoPoker {
         processInput()
     }
 
+    /**
+     * Deal the cards and handle cleanup and evaluation of a player's hand as well as
+     * awarding and reserving tokens.
+     */
     void deal() {
         if (roundState == 2)
             roundState = 0
@@ -240,17 +345,25 @@ class VideoPoker {
                 println "You win ${currentBet * result.payout} tokens! You had a ${result.label}!"
                 tokens += currentBet * result.payout
             } else {
-                println "You lost. Play again? \n Use i to set your bet or hit d to continue with the last bet."
+                println "You lost. Play again? \nUse i to set your bet or hit d to continue with the last bet."
             }
             roundState++
         }
     }
 
+    /**
+     * Deal the needed cards.
+     * If it is after the player has selected a bet, 5 cards are drawn.
+     * At any other point, it's the number of cards the player has elected to replace.
+     */
     void dealHand() {
         int numCards = hand.cardsNeeded()
         numCards.times { hand.addToHand(deck.dealCard()) }
     }
 
+    /**
+     * Increment the players bet by one. It rolls over to 1 when the maximum bet is reached.
+     */
     void incrementBet() {
         if (roundState != 1) {
             currentBet >= maxBet ? currentBet = 1 : currentBet++
@@ -258,6 +371,10 @@ class VideoPoker {
         } else { println "You can't change your bet right now."}
     }
 
+    /**
+     * Display a representation of the game state.
+     * @param showEvaluator whether or now to tell the player what hand they are holding.
+     */
     void drawScreen(boolean showEvaluator = true) {
         println "Bet: ${currentBet}\nTokens: ${tokens}"
         hand.printHand()
@@ -268,6 +385,9 @@ class VideoPoker {
         }
     }
 
+    /**
+     * Process the input from a user.
+     */
     void processInput() {
         while (quitGame != true) {
             String input = scanner.nextLine()
@@ -297,9 +417,8 @@ class VideoPoker {
                         drawScreen()
                     break
                 case "p": case "P":
-                    def items = new JsonSlurper().parse(new File("base_payouts.json"))
                     println("Payout Chart and Descriptions")
-                    for (item in items) {
+                    for (item in evaluator.payouts) {
                         def msg = ["Hand: ${item.label}",
                                    "Payout: ${item.payout}", "Description: \n${item.description}\n"].join("\n")
                         println msg
@@ -313,18 +432,14 @@ class VideoPoker {
             }
         }
     }
+
+    // This is run in the application is run from inside a jar file.
+    public static void main(String[] args) {
+        def poker = new VideoPoker()
+        poker.init()
+    }
 }
 
+// This is run if the file is run as a script
 def poker = new VideoPoker()
 poker.init()
-
-//def hand = new Hand()
-//hand.addToHand(["face": "ace", "value": 1, "suit": "club"])
-//hand.addToHand(["face": "8", "value": 8, "suit": "heart"])
-//hand.addToHand(["face": "2", "value": 2, "suit": "club"])
-//hand.addToHand(["face": "3", "value": 3, "suit": "club"])
-//hand.addToHand(["face": "ace", "value": 1, "suit": "club"])
-//
-//def eval = new Evaluator()
-//
-//println eval.evaluate(hand,1)
