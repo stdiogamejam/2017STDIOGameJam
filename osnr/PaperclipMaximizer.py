@@ -14,6 +14,7 @@ thing_adjs = [
     "red", "shiny", "blue", "decrepit", "yellow", "orange", "old",
     "family heirloom", "priceless", "delicate", "white", "black", "sturdy"
 ]
+env_adjs = ["cold", "icy", "hot", "scorched", "fertile", "barren"]
 # Should be at least 7 things in each level.
 levels = [
     (500, [
@@ -30,27 +31,34 @@ levels = [
         ("dog", living_adjs),
         ("elderly farmer", living_adjs),
         ("married couple and newborn child", ["young", "happy", "newly", "hip"]),
+        ("teenager", ["cool", "nerdy"]),
+        ("kid", ["happy-go-lucky", "rude", "polite", "messy"]),
         ("computer", thing_adjs),
+        "bystander",
+        "bus driver",
+        "office worker"
     ]),
     (300000, [
         ("tree", ["oak", "birch", "cedar", "pine", "maple"]),
         ("house", thing_adjs),
         ("car", thing_adjs),
         ("shrub", thing_adjs),
-        ("two-door garage", thing_adjs)]
-    ),
-    (1000000, ["skyscraper", "Boeing 737", "cruise ship"]),
-    (10000000, ["boardwalk", "national park", "community college"]),
+        ("two-door garage", thing_adjs),
+        "driveway",
+        "basement"
+    ]),
+    (10000000, ["skyscraper", "Boeing 737", "cruise ship", "boardwalk", "national park",
+                "community college", "theme park", "subway", "highway", "railroad"]),
     (20000000, [
-        "steppe",
+        ("steppe", env_adjs),
         "mountain range",
         "deltas",
-        "beach",
+        ("beach", env_adjs),
         "river",
         "lake",
         ("forest", ["rain", "tropical"]),
-        "tundra",
-        "desert"
+        ("tundra", env_adjs),
+        ("desert", env_adjs)
     ]),
     (100000000, ["continent", "sea", "ocean"]),
     (500000000, ["planet" , "sun", "moon"]),
