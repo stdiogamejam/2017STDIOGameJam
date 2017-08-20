@@ -1,4 +1,6 @@
 #! /usr/bin/python3
+# Copyright (c) Alex Becker 2017
+# Licensed under the MIT license, available at https://opensource.org/licenses/MIT
 import shutil
 import random
 import sys
