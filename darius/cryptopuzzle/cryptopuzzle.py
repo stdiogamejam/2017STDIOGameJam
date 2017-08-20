@@ -65,11 +65,5 @@ def clean(s):
             r += c
     return r
 
-def running_sum(ns):
-    result = [0]
-    for n in ns:
-        result.append(result[-1] + n)
-    return result
-
 if __name__ == '__main__':
     main()
