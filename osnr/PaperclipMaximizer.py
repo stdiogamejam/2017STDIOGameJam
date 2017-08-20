@@ -212,7 +212,7 @@ def turn():
     print()
 
 
-def check_game_end():
+def check_game_end(turn_num):
     global last_turn_total_converted
     if last_turn_total_converted < levels[-2][0]: return False
 
@@ -229,6 +229,7 @@ def check_game_end():
     time.sleep(0.6)
 
     print()
+    print("YOU CONSUMED THE UNIVERSE IN {} TURNS".format(turn_num))
     print("THANK YOU FOR PLAYING")
 
     # TODO: ASCII art?
@@ -241,9 +242,6 @@ def main():
 
     turn_num = 1
     while True:
-        if check_game_end():
-            break
-
         time.sleep(0.4)
         print("---------- TURN {} ----------".format(turn_num))
         time.sleep(0.4)
@@ -255,6 +253,9 @@ def main():
 
         turn()
         turn_num += 1
+
+        if check_game_end(turn_num):
+            break
 
 
 main()
