@@ -51,7 +51,7 @@ def printBoard(boardSize, ships):
     for ship in ships:
         for piece in ship:
             if piece[2]==True:
-                board[piece[0]][piece[1]] = "[ !! ]"
+                board[piece[1]][piece[0]] = "[ !! ]"
 
     for row in board:
         print(" ".join(row))
