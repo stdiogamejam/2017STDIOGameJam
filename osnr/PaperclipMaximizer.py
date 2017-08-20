@@ -1,53 +1,129 @@
 from __future__ import print_function
 from collections import namedtuple, defaultdict
-import time
+import random, time
 
-playerPaperclips = 0
-currentLevel = 'earth'
-levels = {'earth': 5.972 * 10**27, 'mars': 6.39*10**26, 'jupiter': 1.898*10**30}
-playerMachines = defaultdict(int) 
-gramsForSpaceship = 531000000
-capacity = 10
+player_paperclips = 0
+player_machines = defaultdict(int)
+player_capacity = 100
+
+last_turn_hand_converted = 0
+last_turn_total_converted = 0
+
+living_adjs = ["angery", "cute", "loyal", "belligerent"]
+thing_adjs = [
+    "red", "shiny", "blue", "decrepit", "yellow", "orange", "old",
+    "family heirloom", "priceless", "delicate", "white", "black", "sturdy"
+]
+# Should be at least 7 things in each level.
+levels = [
+    (500, [
+        "steel wire",
+        ("plastic bottle", ["recycled"]),
+        "metal sheet",
+        ("can", ["aluminum", "recycled", "tin", "recycled aluminum"])
+    ]),
+    (1000, [(noun, thing_adjs) for noun in [
+        "stapler", "keyboard", "mouse", "pot", "pan", "book", "fan", "cup", "mug", "fork"]
+    ]),
+    (10000, [
+        ("squirrel", living_adjs),
+        ("dog", living_adjs),
+        ("elderly farmer", living_adjs),
+        ("married couple and newborn child", ["young", "happy", "newly", "hip"]),
+        ("computer", thing_adjs)
+    ]),
+    (30000, [
+        ("tree", ["oak", "birch", "cedar", "pine", "maple"]),
+        ("house", thing_adjs),
+        ("car", thing_adjs),
+        ("shrub", thing_adjs),
+        ("2 door garage", thing_adjs)]
+    ),
+    (50000, ["skyscraper", "Boeing 737", "cruise ship"]),
+    (100000, ["boardwalk", "national park", "community college"]),
+    (200000,["steppe", "mountain range", "deltas", "beach", "river", "lake", ("forest", ["rain", "tropical"]), "tundra"]),
+    (1000000, ["continent", "sea", ""]),
+    (5000000, ["planet" , "sun", "moon"]),
+    (10000000, [""])
+] # yapf: disable
 
 # In paperclips / turns.
 Machine = namedtuple('Machine', ['name', 'cost', 'output'])
 
 machines = [
-    Machine(name='small', cost=10, output=20),
-    Machine(name='medium', cost=100, output=500),
-    Machine(name='large', cost=1000, output=8000),
-    Machine(name='x-large', cost=20000, output=100000),
+    Machine(name='small', cost=player_capacity, output=player_capacity * 2),
+    Machine(
+        name='medium', cost=player_capacity * 5, output=player_capacity * 10),
+    Machine(
+        name='large', cost=player_capacity * 25, output=player_capacity * 75),
+    Machine(
+        name='xlarge', cost=player_capacity * 50,
+        output=player_capacity * 100),
 ]
 
-def introPage():
-    print ("PAPERCLIP MAXIMIZER OPERATING SYSTEM V1.023")
+
+def intro_page():
+    print("PAPERCLIP MAXIMIZER OPERATING SYSTEM V1.023")
     time.sleep(1)
-    print ("Booting up...""")
+    print("Booting up..." "")
     for i in range(10):
         time.sleep(0.1)
-        print ("...")
+        print("...")
+    time.sleep(0.2)
+    print("Hello. I am an artificial intelligence designed")
+    print("to build paperclips.")
+    print("Please help me in my quest to make as many.")
+    print("paperclips as possible.")
+    print()
+
 
 def last_turn_report():
-    print ("Last turn, I converted {} paperclips myself.".format(10)) # FIXME: Get number.
+    global last_turn_hand_converted, last_turn_total_converted
+    if last_turn_hand_converted > 0:
+        print("Last turn, I converted {} paperclips myself.".format(
+            last_turn_hand_converted))
+        print()
 
-    if len(playerMachines) > 0:
-        print ("I have {} machines working for me, too:".format(len(playerMachines)))
-        for machine, count in playerMachines.items():
-            print ("- {} {} machines converted {} paperclips.".format(
+    if len(player_machines) > 0:
+        print("I have {} machines making paperclips for me:".format(
+            sum(player_machines.values())))
+        for machine, count in player_machines.items():
+            print("- {} {} machines converted {} paperclips.".format(
                 count, machine.name, machine.output * count))
+        print()
 
-    print ("In total, {} paperclips were brought into the world last turn.".format(10)) # FIXME: Get number
-    print ()
+    print("In total, I brought {} paperclips into the world last turn.".format(
+        last_turn_total_converted))
+
+    if last_turn_total_converted > 0:
+        print("Here's what got converted into paperclips:")
+        # Find level.
+        for threshold, level in levels:
+            if last_turn_total_converted < threshold:
+                # This is our level. Stop.
+                break
+        things = random.sample(level, min(random.randint(2, 5), len(level)))
+        for thing in things:
+            if not isinstance(thing, str):
+                # Append adjectives.
+                noun, adjs = thing
+                thing = random.choice(adjs) + " " + noun
+
+            print("- {}".format(thing))
+
+    print()
+
 
 def overall_report():
-    print ("I have constructed {} paperclips so far.".format(playerPaperclips))
-    print ()
+    print("I have constructed {} paperclips so far.".format(player_paperclips))
+    print()
+
 
 # choice : (description, data)
 def input_menu(choices):
     while True:
         for idx, choice in enumerate(choices):
-            print ("{}. {}".format(idx + 1, choice[0]))
+            print("{}. {}".format(idx + 1, choice[0]))
 
         print("> ", end='')
         try:
@@ -58,130 +134,74 @@ def input_menu(choices):
                 chosen_choice = choices[choice_idx]
                 break
         except ValueError:
-            pass # Pass to the error message below.
+            pass  # Pass to the error message below.
 
         # Otherwise, give an error and let them pick again.
-        print ("Not a valid option.") # TODO: Better message.
+        print("Not a valid option.")  # TODO: Better message.
 
     return chosen_choice[1]
 
-def buy_machine(machine):
-    playerMachines[machine] += 1
+
+def machine_convert_paperclips():
+    global player_paperclips, last_turn_total_converted
+    for machine, count in player_machines.items():
+        total_machine_output = count * machine.output
+        player_paperclips += total_machine_output
+        last_turn_total_converted += total_machine_output
 
 
-def convertPaperclips():
-    global playerPaperclips
-    for machine, count in playerMachines.items():
-        playerPaperclips += count * machine.output
-        
 def turn():
-    global playerPaperclips
+    global player_paperclips, player_capacity, last_turn_hand_converted, last_turn_total_converted
 
-    last_turn_report()
+    last_turn_hand_converted = 0
+    last_turn_total_converted = 0
 
-    overall_report()
-    
-    print ("What should I do this turn?")
-    turn_choices = [
-        ("Convert {} paperclips".format(capacity), 1),
-        ("Build an automatic paperclip converter", 2),
-        ("Upgrade myself", 3)
-    ]
+    print("What should I do this turn?")
+    turn_choices = [("Convert {} paperclips".format(player_capacity),
+                     1), ("Build an automatic paperclip converter", 2),
+                    ("Upgrade myself", 3)]
     turn_choice = input_menu(turn_choices)
     if turn_choice == 1:
-        playerPaperclips += capacity
+        player_paperclips += player_capacity
+        last_turn_hand_converted = player_capacity
+        last_turn_total_converted += player_capacity
 
     elif turn_choice == 2:
-        print ("Choose a model....")
+        print("Choose a model...")
 
         machine_choices = []
         for machine in machines:
-            if not (capacity / machine.cost) < 1:
-                machine_choices.append((
-                    "{} {} machines".format(capacity // machine.cost, machine.name),
-                    machine
-                ))
+            if not (player_capacity / machine.cost) < 1:
+                how_many = player_capacity // machine.cost
+                machine_choices.append(("{} {} machines".format(
+                    how_many, machine.name), (machine, how_many)))
 
-        chosen_machine = input_menu(machine_choices)
-        buy_machine(chosen_machine)
+        chosen_machine, chosen_machine_count = input_menu(machine_choices)
+        player_machines[chosen_machine] += chosen_machine_count
 
     elif turn_choice == 3:
-        pass
-    
-    convertPaperclips()
-    print ()
+        player_capacity += player_capacity // 2  # Increase capacity by 50%.
+
+    machine_convert_paperclips()
+    print()
+
 
 def main():
-    introPage()
+    intro_page()
+
+    turn_num = 1
     while True:
+        time.sleep(0.4)
+        print('---------- TURN {} ----------'.format(turn_num))
+        time.sleep(0.4)
+        print()
+
+        if turn_num > 1:
+            last_turn_report()
+            overall_report()
+
         turn()
+        turn_num += 1
+
 
 main()
-
-"""
-
---o-----\
-         \
-          \------
-
-> ------\
-
---------\
-         o
-          \------
-
-
-=======
-
-  ____
- /    \
-/______\
-|      |
-|      |
-|______|
-
-========
-
-contour
-  _____
- /     \
-|      |_
-         \
-
-========
-
-
-   TREE1   
-   
--CAR1-----CAR2------
-
-  TREE2    TREE3
-
-========
-
-You converted 5,000 grams to paperclips last turn, including:
-
-1,000 grams: 5 people
-10,000 grams: 1 house
-
-
-
-You've converted a total of 1,000,034 grams.
-You have 20 subservient paperclip-converterting machines.
-
-This turn, you can convert 3,000 grams.
-How many grams do you want to convert to...
-
-1 paperclips?
-n
-2 paperclip-converting machines?
-
-3 spaceship?
-"""
-
-
-"""
-1. convert 3,000 paperclips
-2. build a machine (will convert 10,000 over the next 5 turns)
-3. upgrade hardware to have greater capacity 
-"""
