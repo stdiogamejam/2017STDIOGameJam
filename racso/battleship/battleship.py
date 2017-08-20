@@ -1,5 +1,5 @@
 ### BATTLESHIP ##################
-# Author: Racso (Oscar Fernando Gomez) - racso.co, github.com/racsoth, bitbucket.com/racsoth
+# Author: Racso (Oscar Fernando Gomez) - racso.co, github.com/racso, bitbucket.com/racsoth
 # Developed during the STDIO Game Jam 2017, Aug 19th and 20th
 # License: MIT - https://opensource.org/licenses/MIT
 #################################
