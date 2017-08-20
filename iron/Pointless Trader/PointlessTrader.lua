@@ -91,7 +91,6 @@ function graphics(writeSentence, options, case)
 		io.write(gameTitle .. "\n")
 		io.write("--------------------------------------------------------------------------------\n")
 		io.write("Money: "..playerMoney.."\n") --Show the ammount of money.
-		io.write("Gold: "..playerGold .. "\n") --Show the ammount of Gold.
 		io.write("Location: ".. playerLocation .. "\n\n")	--Show the location. 
 		
 		for key,value in pairs(playerInventory) do
@@ -110,7 +109,6 @@ function graphics(writeSentence, options, case)
 		io.write(gameTitle .. "\n")
 		io.write("--------------------------------------------------------------------------------\n")
 		io.write("Money: "..playerMoney.."\n") --Show the ammount of money.
-		io.write("Gold: "..playerGold .. "\n") --Show the ammount of Gold.
 		io.write("Location: ".. playerLocation .. "\n\n")	--Show the location. 
 		for key,value in pairs(playerInventory) do
 			io.write("owned " .. key .. ":" ..value.."\n")
@@ -122,7 +120,6 @@ function graphics(writeSentence, options, case)
 		io.write(gameTitle .. "\n")
 		io.write("--------------------------------------------------------------------------------\n")
 		io.write("Money: "..playerMoney.."\n") --Show the ammount of money.
-		io.write("Gold: "..playerGold .. "\n") --Show the ammount of Gold.
 		io.write("Location: ".. playerLocation .. "\n\n")	--Show the location. 
 		
 		for key,value in pairs(playerInventory) do
@@ -140,7 +137,6 @@ function graphics(writeSentence, options, case)
 		io.write(gameTitle .. "\n")
 		io.write("--------------------------------------------------------------------------------\n")
 		io.write("Money: "..playerMoney.."\n") --Show the ammount of money.
-		io.write("Gold: "..playerGold .. "\n") --Show the ammount of Gold.
 		io.write("Location: ".. playerLocation .. "\n\n")	--Show the location. 
 		
 		for key,value in pairs(playerInventory) do
