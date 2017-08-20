@@ -1,12 +1,56 @@
 [
-  {"handType":"JacksOrBetter", "payout": 1, "label":"(Pair of) Jacks or Better"},
-  {"handType":"TwoPair", "payout": 2, "label":"Two Pair"},
-  {"handType":"ThreeOfAKind", "payout": 3, "label":"Three Of A Kind"},
-  {"handType":"Straight", "payout": 4, "label":"Straight"},
-  {"handType":"Flush", "payout": 6, "label":"Flush"},
-  {"handType":"FullHouse", "payout": 9, "label":"Full House"},
-  {"handType":"FourOfAKind", "payout": 25, "label":"Four Of A Kind"},
-  {"handType":"StraightFlush", "payout": 50, "label":"Straight Flush"},
-  {"handType":"RoyalFlush", "payout": 250, "label":"Royal Flush"}
-
+  {
+    "handType": "JacksOrBetter",
+    "payout": 1,
+    "label": "(Pair of) Jacks or Better",
+    "description": "Your hand contains two cards with the same value that are Jacks, Queens, Kings, or Aces."
+  },
+  {
+    "handType": "TwoPair",
+    "payout": 2,
+    "label": "Two Pair",
+    "description": "Your hand has two sets of pairs of any value for each set of pairs. The values of the two pairs are different."
+  },
+  {
+    "handType": "ThreeOfAKind",
+    "payout": 3,
+    "label": "Three Of A Kind",
+    "description": "Your hand has three of the same value card."
+  },
+  {
+    "handType": "Straight",
+    "payout": 4,
+    "label": "Straight",
+    "description":"Your hand has five cards whose values can be arranged in sequence. (e.g. 2-3-4-5-6) An Ace can be a low(lower than 2) or high value(greater than King)."
+  },
+  {
+    "handType": "Flush",
+    "payout": 6,
+    "label": "Flush",
+    "description":"Your hand has five cards with the same suit."
+  },
+  {
+    "handType": "FullHouse",
+    "payout": 9,
+    "label": "Full House",
+    "description":"Your hand has a three of a kind and a pair."
+  },
+  {
+    "handType": "FourOfAKind",
+    "payout": 25,
+    "label": "Four Of A Kind",
+    "description":"Your hand has four of the same value card."
+  },
+  {
+    "handType": "StraightFlush",
+    "payout": 50,
+    "label": "Straight Flush",
+    "description":"Your hand fits the definition of a straight and all 5 cards are the same suit."
+  },
+  {
+    "handType": "RoyalFlush",
+    "payout": 800,
+    "label": "Royal Flush",
+    "description":"Your hand fits the definition of a straight flush and the sequence of cards is 10-J-Q-K-A."
+  }
 ]
