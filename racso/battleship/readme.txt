@@ -5,6 +5,6 @@ Destroy all the enemy ships with as few shots as possible!
 TEAM: Racso
 Oscar Fernando Gómez Sandoval (correo@oscargomez.net)
 
-https://github.com/racsoth
+https://github.com/racso
 https://bitbucket.org/racsoth
 https://racso.itch.io
