@@ -37,7 +37,7 @@ levels = [
         ("house", thing_adjs),
         ("car", thing_adjs),
         ("shrub", thing_adjs),
-        ("2 door garage", thing_adjs)]
+        ("two-door garage", thing_adjs)]
     ),
     (1000000, ["skyscraper", "Boeing 737", "cruise ship"]),
     (10000000, ["boardwalk", "national park", "community college"]),
@@ -69,7 +69,7 @@ machines = [
     Machine(
         name=name,
         cost=player_capacity * (10**i + 1),
-        output=player_capacity * (5**i + 1))
+        output=player_capacity * (10**i + 1))
     for i, name in enumerate(machine_names)
 ]
 
@@ -77,11 +77,13 @@ machines = [
 def intro_page():
     print("PAPERCLIP MAXIMIZER OPERATING SYSTEM V1.023")
     time.sleep(1)
-    print("Booting up..." "")
-    for i in range(10):
+    print("Booting up... [", end='')
+    for i in range(12):
         time.sleep(0.1)
-        print("...")
+        print("**", end='', flush=True)
+    print("]")
     time.sleep(0.2)
+    print()
     print("Hello. I am an artificial intelligence designed")
     print("to build paperclips.")
     print("Please help me in my quest to make as many")
@@ -108,7 +110,7 @@ def last_turn_report():
           format(last_turn_total_converted))
 
     if last_turn_total_converted > 0:
-        print("Here's what got converted into paperclips:")
+        print("Here's what I just converted into paperclips:")
         # Find level.
         for threshold, level in levels:
             if last_turn_total_converted < threshold:
@@ -137,7 +139,7 @@ def overall_report():
 def input_menu(choices):
     while True:
         for idx, choice in enumerate(choices):
-            print("{} : {}".format(idx + 1, choice[0]))
+            print("{}: {}".format(idx + 1, choice[0]))
 
         print("> ", end='')
         try:
@@ -195,8 +197,8 @@ def turn():
         player_machines[chosen_machine] += chosen_machine_count
 
     elif turn_choice == 3:
-        player_capacity += random.randint(player_capacity * 3,
-                                          player_capacity * 9)
+        player_capacity += random.randint(player_capacity // 2,
+                                          player_capacity * 2)
 
     machine_convert_paperclips()
     print()
