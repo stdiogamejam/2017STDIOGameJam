@@ -1,0 +1,16 @@
+How to Play
+
+Video Poker is a game where you attempt to create the best hand possible over two rounds of play. After setting your bet,
+you will be dealt 5 cards('d' key). The bet will be decremented from your tokens. You can choose to keep or replace any
+number of them by using the 0,1,2,3, and 4 keys to specify. Selecting the same card again will toggle its state. Once
+you have made your selections, hitting the Deal key again will replace the selected cards. Your hand will be evaluated
+and your tokens will be incremented if you won.
+
+h/H      : Show this menu
+p/P      : Show payout chart
+r/R      : Redraw game screen
+i/I/+/=  : Increment the bet
+d/D/Deal : Deal the cards
+q/Q/Quit : Quit the game
+
+Change your bet or deal the cards.

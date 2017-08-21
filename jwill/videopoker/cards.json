@@ -1,0 +1,262 @@
+[
+    {
+        "face": "ace",
+        "value": 1,
+        "suit": "club"
+    },
+    {
+        "face": "2",
+        "value": 2,
+        "suit": "club"
+    },
+    {
+        "face": "3",
+        "value": 3,
+        "suit": "club"
+    },
+    {
+        "face": "4",
+        "value": 4,
+        "suit": "club"
+    },
+    {
+        "face": "5",
+        "value": 5,
+        "suit": "club"
+    },
+    {
+        "face": "6",
+        "value": 6,
+        "suit": "club"
+    },
+    {
+        "face": "7",
+        "value": 7,
+        "suit": "club"
+    },
+    {
+        "face": "8",
+        "value": 8,
+        "suit": "club"
+    },
+    {
+        "face": "9",
+        "value": 9,
+        "suit": "club"
+    },
+    {
+        "face": "10",
+        "value": 10,
+        "suit": "club"
+    },
+    {
+        "face": "jack",
+        "value": 11,
+        "suit": "club"
+    },
+    {
+        "face": "queen",
+        "value": 12,
+        "suit": "club"
+    },
+    {
+        "face": "king",
+        "value": 13,
+        "suit": "club"
+    },
+    {
+        "face": "ace",
+        "value": 1,
+        "suit": "spade"
+    },
+    {
+        "face": "2",
+        "value": 2,
+        "suit": "spade"
+    },
+    {
+        "face": "3",
+        "value": 3,
+        "suit": "spade"
+    },
+    {
+        "face": "4",
+        "value": 4,
+        "suit": "spade"
+    },
+    {
+        "face": "5",
+        "value": 5,
+        "suit": "spade"
+    },
+    {
+        "face": "6",
+        "value": 6,
+        "suit": "spade"
+    },
+    {
+        "face": "7",
+        "value": 7,
+        "suit": "spade"
+    },
+    {
+        "face": "8",
+        "value": 8,
+        "suit": "spade"
+    },
+    {
+        "face": "9",
+        "value": 9,
+        "suit": "spade"
+    },
+    {
+        "face": "10",
+        "value": 10,
+        "suit": "spade"
+    },
+    {
+        "face": "jack",
+        "value": 11,
+        "suit": "spade"
+    },
+    {
+        "face": "queen",
+        "value": 12,
+        "suit": "spade"
+    },
+    {
+        "face": "king",
+        "value": 13,
+        "suit": "spade"
+    },
+    {
+        "face": "ace",
+        "value": 1,
+        "suit": "heart"
+    },
+    {
+        "face": "2",
+        "value": 2,
+        "suit": "heart"
+    },
+    {
+        "face": "3",
+        "value": 3,
+        "suit": "heart"
+    },
+    {
+        "face": "4",
+        "value": 4,
+        "suit": "heart"
+    },
+    {
+        "face": "5",
+        "value": 5,
+        "suit": "heart"
+    },
+    {
+        "face": "6",
+        "value": 6,
+        "suit": "heart"
+    },
+    {
+        "face": "7",
+        "value": 7,
+        "suit": "heart"
+    },
+    {
+        "face": "8",
+        "value": 8,
+        "suit": "heart"
+    },
+    {
+        "face": "9",
+        "value": 9,
+        "suit": "heart"
+    },
+    {
+        "face": "10",
+        "value": 10,
+        "suit": "heart"
+    },
+    {
+        "face": "jack",
+        "value": 11,
+        "suit": "heart"
+    },
+    {
+        "face": "queen",
+        "value": 12,
+        "suit": "heart"
+    },
+    {
+        "face": "king",
+        "value": 13,
+        "suit": "heart"
+    },
+    {
+        "face": "ace",
+        "value": 1,
+        "suit": "diamond"
+    },
+    {
+        "face": "2",
+        "value": 2,
+        "suit": "diamond"
+    },
+    {
+        "face": "3",
+        "value": 3,
+        "suit": "diamond"
+    },
+    {
+        "face": "4",
+        "value": 4,
+        "suit": "diamond"
+    },
+    {
+        "face": "5",
+        "value": 5,
+        "suit": "diamond"
+    },
+    {
+        "face": "6",
+        "value": 6,
+        "suit": "diamond"
+    },
+    {
+        "face": "7",
+        "value": 7,
+        "suit": "diamond"
+    },
+    {
+        "face": "8",
+        "value": 8,
+        "suit": "diamond"
+    },
+    {
+        "face": "9",
+        "value": 9,
+        "suit": "diamond"
+    },
+    {
+        "face": "10",
+        "value": 10,
+        "suit": "diamond"
+    },
+    {
+        "face": "jack",
+        "value": 11,
+        "suit": "diamond"
+    },
+    {
+        "face": "queen",
+        "value": 12,
+        "suit": "diamond"
+    },
+    {
+        "face": "king",
+        "value": 13,
+        "suit": "diamond"
+    }
+]
