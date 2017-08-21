@@ -86,13 +86,13 @@ class Game():
     def run(self):
         print(
             '''
- _____    _____     _____       _       
-|  __ \  |  __ \   / ____|     (_)      
-| |__) | | |__) | | |  __       _  ___  
-|  _  /  |  ___/  | | |_ |     | |/ _ \ 
-| | \ \  | |      | |__| |  _  | | (_) |
-|_|  \_\ |_|       \_____| (_) |_|\___/
-               By RACSO. http://racso.co\n\n
+ _____   _____    _____     _       
+|  __ \ |  __ \  / ____|   (_)      
+| |__) || |__) || |  __     _  ___  
+|  _  / |  ___/ | | |_ |   | |/ _ \ 
+| | \ \ | |     | |__| | _ | | (_) |
+|_|  \_\|_|      \_____|(_)|_|\___/
+           By RACSO. http://racso.co\n\n
 ''')
         print("You're exploring a dangerous dungeon to collect GOLD ($). Be aware of GOBLINS (@)! If you are hurt, drink POTIONS (+) to heal. You may find TRAPS (_) which you can disable easily to make for exploring.")
         print("Each turn, you interact with a cell in the board PLUS every other cell of the same type horizontally or vertically connected with it.")
