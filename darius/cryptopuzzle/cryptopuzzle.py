@@ -12,7 +12,8 @@ def main():
     play_puzzle(get_cryptogram())
 
 def get_cryptogram():
-    print("Enter the encrypted puzzle, followed by a line with only a period ('.') to mark the end:")
+    print("Enter the encrypted puzzle, followed by a line with only a period ('.')")
+    print("to mark the end:")
     lines = []
     while True:
         line = input()
