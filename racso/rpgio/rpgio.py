@@ -6,10 +6,10 @@
 
 from random import randint as rand
 
-
 class Game():
 
     def printBoard(self):
+        # Print the board according to the current graphic mode.
         for r in range(self.size):
             if self.mode == 1:
                 print(
@@ -21,23 +21,26 @@ class Game():
                       str(r * self.size) + "-" + str((r + 1) * self.size - 1))
 
     def printStats(self):
+        # Print some stats about the player.
         print("Current round: " + str(self.turn))
         print("Your HP: " + str(self.hp))
         print("Your Gold: " + str(self.gold))
 
     def takenCells(self, initial):
+        # Calculate which cells are taken based on an initial one. Taken cells are those of the same type of the initial one that are horizontally or vertically connected with it.
         initialPos = initial % self.size, initial // self.size
         taken = {initialPos}
-        for direction in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+        for direction in [(1, 0), (-1, 0), (0, 1), (0, -1)]: # This is used for checking in the four directions, one at a time.
             for dif in range(1, self.size):
                 pos = (initialPos[0] + dif * direction[0],
                        initialPos[1] + dif * direction[1])
                 if not(0 <= pos[0] < self.size and 0 <= pos[1] < self.size) or self.board[pos[1]][pos[0]] != self.board[initialPos[1]][initialPos[0]]:
-                    break
+                    break # We've reached the end of the board, or a cell that is different to the original.
                 taken.add(pos)
         return taken
 
     def processCells(self, cells):
+        # Process the selected cells according to their type.
         element, amount = self.board[cells[0][1]][cells[0][0]], len(cells)
         if element == self.GOBLIN:
             print("You killed %s goblins!" % amount)
@@ -51,9 +54,10 @@ class Game():
             print("You disabled %s traps." % amount)
 
     def removeFromBoard(self, cells):
+        # Remove the selected cells from the board and let the remaining cells fall to fill the empty spaces.
         for cell in cells:
             self.board[cell[1]][cell[0]] = self.EMPTY
-        while True:
+        while True: # Cells go down one step at a time, so we need several passes. We keep passing as long as we make at least one change during a pass.
             changeMade = False
             for row in range(self.size - 1, 0, -1):
                 for col in range(self.size):
@@ -63,17 +67,20 @@ class Game():
                 break
 
     def receiveDamage(self):
+        # Receive damage from alive goblins.
         goblins = sum([row.count(self.GOBLIN) for row in self.board])
         print("You are attacked by %s goblins! Each one does 1 damage!" % goblins)
         self.hp -= goblins
 
     def fillBoard(self):
+        # Fill the existing empty spaces with new elements.
         for r in range(self.size):
             for c in range(self.size):
                 if self.board[r][c] == self.EMPTY:
                     self.board[r][c] = self.items[rand(0, len(self.items) - 1)]
 
     def read(self, prompt, error, minimum, maximum):
+        # Read an integer until a valid value is introduced.
         while True:
             try:
                 command = int(input(prompt))
@@ -84,6 +91,7 @@ class Game():
                 print(error)
 
     def run(self):
+        # Run a game.
         print(
             '''
  _____   _____    _____     _       
@@ -113,8 +121,8 @@ class Game():
         print("BOARD SIZE & DIFFICULTY:\n1. Small (5x5, easy, recommended for learning)\n2. Medium (7x7, normal)\n3. Big (10x10, hard)\n4. Fantastic (14x14, very hard)")
         self.size = self.read("Select size: ", "Invalid size", 1, 4)
 
-        self.hp = 30 * self.size**2
-        self.size = 4 + (self.size * (self.size + 1)) // 2
+        self.hp = 30 * self.size**2 # The size of the board affects our HP. A bigger board is way more difficult to handle.
+        self.size = 4 + (self.size * (self.size + 1)) // 2 # This formula maps the values from the menu (1,2,3,4) to the desired size values (5,7,10,14).
 
         self.board = [[self.EMPTY] * self.size for i in range(self.size)]
         self.fillBoard()
@@ -125,6 +133,7 @@ class Game():
         print("\n" * 100)
 
         while True:
+            # The main game loop.
             self.printBoard()
             print("")
             self.printStats()
