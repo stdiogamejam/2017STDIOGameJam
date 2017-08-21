@@ -203,8 +203,11 @@ def input_menu(choices):
             if choice_idx < len(choices):
                 chosen_choice = choices[choice_idx]
                 break
+        # Pass to the error message below.
+        except SyntaxError:
+            pass
         except ValueError:
-            pass  # Pass to the error message below.
+            pass
 
         # Otherwise, give an error and let them pick again.
         print("Not a valid option.")
@@ -291,6 +294,8 @@ def check_game_end(turn_num):
     time.sleep(0.6)
 
     print()
+    print(paperclip)
+    print()
     print("YOU CONSUMED THE UNIVERSE IN {} TURNS".format(turn_num))
     print("THANK YOU FOR PLAYING")
 
@@ -318,8 +323,7 @@ def main():
             break
 
 
-main()
-"""
+paperclip = """
  __
 / _ \
 || \|
@@ -328,4 +332,6 @@ main()
 \__/
 
 paperclip :'(
+- s.w.
 """
+main()
