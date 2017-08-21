@@ -23,11 +23,11 @@ INTRODUCTION = '''
 =============================================================
 
 
-The goal in Clever Discard is to discard all 98 cards onto two discard stacks.
+The goal in Clever Discard is to discard all cards onto two discard stacks.
 
 There are two types of discard stacks:
-* Ascending order stack (from 1 to 99)
-* Descending order stack (from 99 to 1)
+* Ascending order stack (from 1 to 100)
+* Descending order stack (from 100 to 1)
 
 Each turn, the player can:
 * Draw new cards until his/her hands are full (8 cards)
