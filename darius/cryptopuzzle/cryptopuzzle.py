@@ -24,15 +24,15 @@ def get_cryptogram():
 alphabet = string.ascii_lowercase
 
 def play_puzzle(lines):
-    code = ''.join(c for line in lines for c in line if c.isalpha())
-    if not code:
+    decoder = {c: ' ' for line in lines for c in line if c.isalpha()}
+    if not decoder:
         print("No text to decrypt!")
         return
-    decoder = {c: ' ' for c in set(code)}
 
     while True:
-        used = set(decoder.values()) - set(' ')
-        letters_left = ''.join(' ' if c in used else c for c in alphabet)
+        used = set(decoder.values())
+        letters_left = ''.join(' ' if c in used else c
+                               for c in alphabet)
 
         for line in lines:
             print('')
