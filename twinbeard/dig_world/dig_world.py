@@ -1,5 +1,5 @@
 from math import cos, sin
-from random import random, randrange, randint
+from random import random, randint
 import pickle
 import re
 
@@ -238,15 +238,18 @@ def doGo(move):
     
   new_pos = game.miner_pos.add(dir)
 
+  current_tile = tileAt(game.miner_pos)
+  new_tile     = tileAt(new_pos)
+  
   # If climbing, try to use a ladder
-  if dir.y < 0 and tileAt(game.miner_pos)!="H":
+  if dir.y < 0 and current_tile!="H":
     if game.ladders == 0:
       print("You can't go up because you don't have any ladders!")
       return
     if atSurface():
       print("You can't go up because you're already on the surface!")
       return
-    if tileAt(game.miner_pos)=="%":
+    if current_tile=="%":
       print("You can't place a ladder over the gate!")
       return
     game.ladders -= 1
@@ -254,21 +257,19 @@ def doGo(move):
     print("You drop a ladder to climb.")
     
   # Don't move into impassable objects    
-  if tileAt(new_pos) == "=" or tileAt(new_pos) == "0":
-    print("You can't dig into boulders!")
-    return
-  elif tileAt(new_pos) == "|" or tileAt(new_pos) == "-":
-    print("You can't dig past the edge of the world!")
-    return     
+  for b in [("0=", "into boulders"), ("|-", "past the edge of the world")]:
+    if new_tile in b[0]:
+      print("You can't dig %s!"%b[1])
+      return
 
   # Interact with stuff in the world
   if solidAt(new_pos, "H%"):  
     # Loose treasure
-    if tileAt(new_pos) == "$":
+    if new_tile == "$":
       print("You found some treasure, worth $"+str(int(new_pos.y/5+1))+"!")
       game.carried_money += int(new_pos.y/5+1)
     # Treasure chest
-    elif tileAt(new_pos) == "n":
+    elif new_tile == "n":
       if random() < 0.5:
         print("You find $%d of treasure in the chest!" % (game.world_size*2))
         game.carried_money += game.world_size*2
@@ -300,7 +301,7 @@ def doGo(move):
   # Actually perform the move
   game.miner_pos = new_pos
   
-  if tileAt(game.miner_pos)=="%": print("You found a gate to another world!")
+  if current_tile=="%": print("You found a gate to another world!")
   
   # Unsettle any boulders above the miner.
   boulders_released = 0
