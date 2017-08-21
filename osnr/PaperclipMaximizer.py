@@ -1,13 +1,15 @@
-from __future__ import print_function
+from __future__ import print_function  # So this runs on both Python 2 and 3.
 from collections import namedtuple, defaultdict
-import random, time
+import sys, random, time
 
-player_paperclips = 0
-player_machines = defaultdict(int)
-player_capacity = 100
+# Game constants
+# --------------
 
-last_turn_hand_converted = 0
-last_turn_total_converted = 0
+# How many paperclips the player can convert at start.
+# Also used to design all the machine types.
+INITIAL_CAPACITY = 100
+
+# Things that we report as being converted to paperclips.
 
 living_adjs = ["angery", "cute", "loyal", "belligerent"]
 thing_adjs = [
@@ -15,9 +17,15 @@ thing_adjs = [
     "family heirloom", "priceless", "delicate", "white", "black", "sturdy"
 ]
 env_adjs = ["cold", "icy", "hot", "scorched", "fertile", "barren"]
-# Should be at least 7 things in each level.
 levels = [
+    # A level is a tuple (threshold, things). After each turn, we compute
+    # how many paperclips we converted, then find the first level with
+    # threshold above that number. For example, if we converted 700
+    # paperclips, we'd take the level with threshold 1000.
     (500, [
+        # We report a few random things from that level: an entry here
+        # can be either a string (noun) or a tuple (noun, list of
+        # adjectives).
         "steel wire",
         ("plastic bottle", ["recycled"]),
         "metal sheet",
@@ -62,13 +70,15 @@ levels = [
     ]),
     (100000000, ["continent", "sea", "ocean"]),
     (500000000, ["planet" , "sun", "moon"]),
-    (10000000000, ["galactic supercluster", "galaxy", "arm", "black hole", "nebula", "star system"]),
-    (100000000000, ["universe"])
+    (10000000000, ["galactic supercluster", "galaxy", "arm", "black hole", "nebula", "star system"])
 ] # yapf: disable
 
-# In paperclips / turns.
-Machine = namedtuple('Machine', ['name', 'cost', 'output'])
+# Once you produce more than this many paperclips in a turn, you win
+# and the game is over.
+UNIVERSE = 100000000000
 
+# Construct a list of the machine types that the player can buy.
+Machine = namedtuple('Machine', ['name', 'cost', 'output'])
 machine_names = [
     "pico", "nano", "micro", "small", "medium", "large", "xlarge", "2xlarge",
     "4xlarge", "10xlarge", "16xlarge"
@@ -76,10 +86,27 @@ machine_names = [
 machines = [
     Machine(
         name=name,
-        cost=player_capacity * (10**i + 1),
-        output=player_capacity * (10**i + 1))
+        cost=INITIAL_CAPACITY * (10**i),
+        output=INITIAL_CAPACITY * (10**i))
     for i, name in enumerate(machine_names)
 ]
+
+# Game state variables
+# --------------------
+
+# How many paperclips have we produced over the course of the game?
+player_paperclips = 0
+# Dictionary: keys are machine types, and values are how many of those
+# machine the player has bought.
+player_machines = defaultdict(int)
+# How many paperclips the player produces by hand (not including
+# machines) in a turn.
+player_capacity = INITIAL_CAPACITY
+
+# How many paperclips were converted by hand last turn?
+last_turn_hand_converted = 0
+# How many paperclips were converted in total last turn?
+last_turn_total_converted = 0
 
 
 def intro_page():
@@ -88,7 +115,8 @@ def intro_page():
     print("Booting up... [", end='')
     for i in range(12):
         time.sleep(0.1)
-        print("**", end='', flush=True)
+        print("**", end='')
+        sys.stdout.flush()  # Need to flush if writing part of a line.
     print("]")
     time.sleep(0.2)
     print()
@@ -100,6 +128,8 @@ def intro_page():
 
 
 def last_turn_report():
+    """At the start of each turn, report what happened after last turn."""
+
     global last_turn_hand_converted, last_turn_total_converted
     if last_turn_hand_converted > 0:
         print("Last turn, I converted {:,} paperclips myself.".format(
@@ -119,7 +149,7 @@ def last_turn_report():
 
     if last_turn_total_converted > 0:
         print("Here's what I just converted into paperclips:")
-        # Find level.
+        # Find the level to report things from.
         for threshold, level in levels:
             if last_turn_total_converted < threshold:
                 # This is our level. Stop.
@@ -127,8 +157,11 @@ def last_turn_report():
         things = random.sample(level, min(random.randint(2, 5), len(level)))
         for thing in things:
             if not isinstance(thing, str):
-                # Append adjectives.
+                # Prepend adjectives.
                 noun, adjs = thing
+                # In addition to the adjective list (with a space
+                # appended to each adjective), we also allow there to
+                # be no adjective prepended sometimes [""].
                 thing = random.choice([adj + " "
                                        for adj in adjs] + [""]) + noun
 
@@ -138,13 +171,26 @@ def last_turn_report():
 
 
 def overall_report():
+    """At the start of each turn, report overall progress."""
+
     print(
         "I have constructed {:,} paperclips so far.".format(player_paperclips))
     print()
 
 
-# choice : (description, data)
 def input_menu(choices):
+    """Helper function: takes a list of choices and presents a menu.
+    The list should contain tuples (description string, return data).
+    For example, if input_menu is passed [("hello", True), ("there", False)],
+    this function prints:
+
+    1: hello
+    2: there
+    >
+
+    If the user types 1 and presses Enter, it returns True; if they
+    type 2 and press Enter, it returns False."""
+
     while True:
         for idx, choice in enumerate(choices):
             print("{}: {}".format(idx + 1, choice[0]))
@@ -168,6 +214,9 @@ def input_menu(choices):
 
 
 def machine_convert_paperclips():
+    """At the end of each turn, go through the machines in play and update
+    the counts of paperclips converted."""
+
     global player_paperclips, last_turn_total_converted
     for machine, count in player_machines.items():
         total_machine_output = count * machine.output
@@ -178,25 +227,33 @@ def machine_convert_paperclips():
 def turn():
     global player_paperclips, player_capacity, last_turn_hand_converted, last_turn_total_converted
 
+    # Reset 'last-turn' counts to be filled in for the coming turn.
     last_turn_hand_converted = 0
     last_turn_total_converted = 0
 
     print("What should I do this turn?")
-    turn_choices = [("Convert {:,} paperclips".format(player_capacity),
-                     1), ("Build an automatic paperclip converter", 2),
-                    ("Upgrade myself", 3)]
+    turn_choices = [
+        ("Convert {:,} paperclips".format(player_capacity), 1),
+        ("Build an automatic paperclip converter", 2),
+        ("Upgrade myself", 3)
+    ] # yapf: disable
+
     turn_choice = input_menu(turn_choices)
-    if turn_choice == 1:
+    print()
+
+    if turn_choice == 1:  # Convert paperclips by hand.
         player_paperclips += player_capacity
         last_turn_hand_converted = player_capacity
         last_turn_total_converted += player_capacity
 
-    elif turn_choice == 2:
+    elif turn_choice == 2:  # Build a paperclip conversion machine.
         print("Choose a model...")
 
         machine_choices = []
+        # Find all the machines that are buyable, and how many the
+        # player can afford to buy of each.
         for machine in machines:
-            if not (player_capacity / machine.cost) < 1:
+            if player_capacity >= machine.cost:
                 how_many = player_capacity // machine.cost
                 machine_choices.append(("{:,} {} machines".format(
                     how_many, machine.name), (machine, how_many)))
@@ -204,17 +261,22 @@ def turn():
         chosen_machine, chosen_machine_count = input_menu(machine_choices)
         player_machines[chosen_machine] += chosen_machine_count
 
-    elif turn_choice == 3:
+        print()
+
+    elif turn_choice == 3:  # Upgrade self conversion capacity.
+        # Upgrade by adding something between 50% and 200% capacity.
         player_capacity += random.randint(player_capacity // 2,
                                           player_capacity * 2)
 
     machine_convert_paperclips()
-    print()
 
 
 def check_game_end(turn_num):
+    """After each turn, check if the player has converted the whole
+    universe; if so, then the game is over."""
+
     global last_turn_total_converted
-    if last_turn_total_converted < levels[-2][0]: return False
+    if last_turn_total_converted < UNIVERSE: return False
 
     print("Analyzing paperclip production...")
     for i in range(5):
@@ -231,8 +293,6 @@ def check_game_end(turn_num):
     print()
     print("YOU CONSUMED THE UNIVERSE IN {} TURNS".format(turn_num))
     print("THANK YOU FOR PLAYING")
-
-    # TODO: ASCII art?
 
     return True  # End the game.
 
