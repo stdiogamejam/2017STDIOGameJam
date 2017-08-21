@@ -68,7 +68,8 @@ def nextRealm():
   game.realm = realms[game.current_realm]  
 
   # Have to do rotate the level design data because of the dumb way it's
-  # oriented!
+  # oriented! Also we're replacing # with " because otherwise we'd have to
+  # type \ before every dirt square in the level definition.
   game.world = []  
   game.world_size = Vec2(len(game.realm["world"][0]), len(game.realm["world"]))
   for x in range(game.world_size.x):
