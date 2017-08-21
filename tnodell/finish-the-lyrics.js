@@ -2,41 +2,54 @@
 var song = require("./lyrics.js");
 // Require the utilities file,
 var util = require('util');
-
+// set these as globals to be accessible from other functions
+var line;
+var lineObj;
 // First provide instructions to the player
-console.log("In finish the lyrics, you must finish the lyrics! \n The first half of the lyrics will be provided to you. \n You must finish the line.");
+console.log("In finish the lyrics, you must finish the lyrics! \nThe first half of the lyrics will be provided to you. \nYou must finish the line.");
 console.log("The song you will be completing is: " + song.name);
 console.log("Type quit to end.");
-console.log("Game will start in 1.5 seconds");
+console.log("Type new round to be given a different line.");
 
-function start() {
-		var line = getRandomLine(song.lyrics);
-		var lineObj = splitLine(line);
+function startNewRound() {
+		line = getRandomLine(song.lyrics);
+		lineObj = splitLine(line);
 
-		console.log("Line: "+ line);
+		//console.log("Line: "+ line);
 		console.log("First Half: "+ lineObj.firstHalf);
+		//console.log("Second Half: "+ lineObj.secondHalf);
 		console.log("Finish the line: ");
-
+}
 	// Not every node program needs process, so it is paused by default. We must resume it.
-	process.stdin.resume();
+process.stdin.resume();
 	// Set our encoding
-	process.stdin.setEncoding('utf8');
+process.stdin.setEncoding('utf8');
 
 	// process is our environment
 	// stdin is our input, and on provides a listener
 	// on 'data', apply this function using the text from the input
-	process.stdin.on('data', function (text) {
-		//console.log("Compare string: "+ compareString(lineObj.firstHalf, lineObj.secondHalf));
+	// once only listens once
+process.stdin.on('data', function (text) {
 
-		if (text == 'quit\r\n') {
-		      done();
-		    }
-	});
-}
+	if (compareString(lineObj.secondHalf+"\r\n", text)) {
+		console.log("Hooray! \n Try another one! \n");
+		startNewRound();
+		// if the guess is correct, return, don't continue this function
+		return;
+	}
+	if (!compareString(lineObj.secondHalf+"\r\n", text)){
+		console.log("Nope. Try again");
+	}
+	if ( text == 'new round\r\n'){
+		startNewRound();
+	}
+	if (text == 'quit\r\n') {
+		done();
+	}
+});
 
-setTimeout(start, 1500);
-
-
+//Start the game!
+startNewRound();
 
 /* Function definitions */
 
@@ -80,14 +93,14 @@ function splitLine(line){
 function compareString(str1, str2){
 	// fancy regex to simplify strings to compare them. For more info https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
 	// remove any punctuation
-	var punctuationless1 = str1.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+	var punctuationless1 = str1.replace(/[.',\/#!$%\^&\*;:{}=\-_`~()]/g,"");
 	// remove any excess space
 	var extraSpaceless1 = punctuationless1.replace(/\s{2,}/g," ");
 	// make the whole string lowercase
 	var finalString1 = extraSpaceless1.toLowerCase();
 
 	//repeat for the user inputed string
-	var punctuationless2 = str2.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+	var punctuationless2 = str2.replace(/[.',\/#!$%\^&\*;:{}=\-_`~()]/g,"");
 	var extraSpaceless2 = punctuationless2.replace(/\s{2,}/g," ");
 	var finalString2 = extraSpaceless2.toLowerCase();
 
