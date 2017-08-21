@@ -17,22 +17,8 @@ def get_cryptogram():
     while True:
         line = input()
         if line.strip() == '.': break
-        lines.append(clean(line.lower()))
+        lines.append(line.lower())
     return lines
-
-def clean(s):
-    "Expand tabs; blank out other control characters."
-    r = ''
-    for c in s:
-        if c == '\t':
-            while True:
-                r += ' '
-                if len(r) % 8 == 0: break
-        elif ord(c) < 32:
-            r += ' '
-        else:
-            r += c
-    return r
 
 alphabet = string.ascii_lowercase
 
