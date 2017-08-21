@@ -294,8 +294,6 @@ def check_game_end(turn_num):
     time.sleep(0.6)
 
     print()
-    print(paperclip)
-    print()
     print("YOU CONSUMED THE UNIVERSE IN {} TURNS".format(turn_num))
     print("THANK YOU FOR PLAYING")
 
@@ -323,7 +321,7 @@ def main():
             break
 
 
-paperclip = """
+"""
  __
 / _ \
 || \|
