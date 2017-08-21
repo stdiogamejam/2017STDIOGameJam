@@ -77,7 +77,7 @@ are used to produce behaviors that depend on the cycle count."""
 sand_fall_table = [(0,1),(-1,1),(1,1),(0,0)]
 fire_rise_table_0 = [(0,-1),(1,1)]
 fire_rise_table_1 = [(0,-1),(-1,-1)]
-water_fall_table_0 = [(0,1),(-1,-1),(-1,0)]
+water_fall_table_0 = [(0,1),(-1,1),(-1,0)]
 water_fall_table_1 = [(0,1),(1,1),(1,0)]
 
 """In each collision scenario of (source, destination), mutate to
