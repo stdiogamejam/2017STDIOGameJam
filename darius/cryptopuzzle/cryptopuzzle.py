@@ -39,7 +39,8 @@ def play_puzzle(lines):
             print(''.join(' -'[c.isalpha()] for c in line))
             print(line)
         print('')
-        print("Free: %s\n" % letters_left)
+        print("Free: " + letters_left)
+        print('')
 
         while True:
             command = input("Enter a substitution like 'crypt/plain': ")
