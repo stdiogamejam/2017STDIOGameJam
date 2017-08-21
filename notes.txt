@@ -1,0 +1,64 @@
+Programmer's notes:
+
+The key to understanding how this game runs is in understanding how 
+concurrency issues are being handled. Concurrency is the management of 
+"partially ordered" execution: events that apparently happen 
+simultaneously. Here, it occurs in two places: in finite state machines 
+(FSMs), and in the particle simulation.
+
+On the state machines: Both Editor and Persist are designed as 
+simplified FSMs. This eases their programming since it's possible to 
+jump back and forth by changing states. It also allows the logic to run 
+concurrently: instead of taking over the main loop, the state machine 
+can partition a task into various different states, return execution 
+after switching state to let other things happen, then resume where it 
+left off. It's like having more than one call stack.
+
+If this game were turned into a real-time game, raw_input would present 
+a problem, because the game would need a way to not pause and both take 
+the input and update the scene concurrently. However, the basic 
+structure of the game wouldn't have to change: it might need, for 
+example, an additional FSM to poll for input, and more states in the 
+existing FSMs to represent points "in between" events, like 
+transitioning between different menus. The FSM concept can also be 
+realized in a more structured form, with more checks and automation.
+
+On the simulation: The main simulation takes place in grid_update(). 
+Here, the concurrency problem is: "how do I know that the state of the 
+grid is going to be 'stable' while I'm moving around and colliding the 
+particles?" Imagine, for example, that the particles updated in a random
+ order, making assumptions that are inconsistent with each other. When 
+ this issue comes up in games, it's usually resolved by partitioning the
+  updates into more, simpler passes to reflect how we understand the 
+  changes occurring.
+
+This version of Falling Sand attacks concurrency in the simulation in 
+several ways. It "double-buffers" the grid by copying to a new one in 
+each cycle, and then running tests on the old one so that all execution 
+takes place from the same starting place, instead of behavior changing 
+based on when the particle is reached. It updates the particles in 
+groups based on the particle type, so that the interactions between 
+different types of particles are consistent across different spatial 
+situations(e.g. if A is left of B, will it collide the same way as A 
+right of B?). And it applies data-driven falling rules: the particles 
+will tend to prefer falling "down", but will go in different directions 
+as secondary options, depending on which cycle we're in and thus which 
+fall table is used.
+
+One concurrency issue that is not addressed is compacting the falling 
+behavior to leave no gaps. When large quantities of sand fall, gaps 
+appear because the grid is being iterated top-to-bottom, so only the 
+bottom-most of a large group of sand can fall, and the resulting delay 
+ripples upwards across multiple cycles. This could be addressed by 
+carefully managing execution orders so that the "edges" of groups of 
+particles always update first, or simply by iterating over the grid in 
+the inverse of the direction of gravity for that particle type.
+
+Many implementations of the game aim for speed and weave a tangle of 
+iteration and execution logic that focuses on only updating particles 
+that are "awake" (moving) while using awareness of what parts of the 
+grid have changed to avoid updating the particles already at rest. It's 
+possible to considerably optimize this simulation by employing such 
+methods, and by changing the basic data type to use Python's arrays 
+instead of lists.
+
