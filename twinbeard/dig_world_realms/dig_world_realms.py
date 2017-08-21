@@ -190,10 +190,10 @@ def checkTraps():
   shot = False
   for x in range(1, 10):
     if tileAt (game.miner_pos.add(Vec2(x, 0)))=="{": shot = True
-    if solidAt(game.miner_pos.add(Vec2(x, 0))): break
+    if solidAt(game.miner_pos.add(Vec2(x, 0)), "H"): break
   for x in range(1, 10):
     if tileAt (game.miner_pos.add(Vec2(-x, 0)))=="}": shot = True
-    if solidAt(game.miner_pos.add(Vec2(-x, 0))): break
+    if solidAt(game.miner_pos.add(Vec2(-x, 0)), "H"): break
   if shot:
     print("An arrow shoots out of the arrow trap and kills you!")
     restoreCheckpoint()
@@ -302,20 +302,26 @@ def doGo(move):
     elif dir.y==-1: print("You dig up.")
     elif dir.y== 1: print("You dig down.")
     
-    # No matter what the item is, it goes away now
-    setTile(new_pos, ".")
-  
+    if tileAt(new_pos)=="L":
+      print("You refill your ladders from a big pile of ladders you found.")
+      game.ladders = game.max_ladders
+    else:
+      setTile(new_pos, ".")
+
+  was_at_surface = atSurface()      
+  game.miner_pos = new_pos
+
   # Returning to surface with this move?
-  if not atSurface() and new_pos.y==-1: reachSurface()
+  if not was_at_surface and atSurface(): reachSurface()
   
   # Actually perform the move
-  game.miner_pos = new_pos
   
   # Grab the relic if touched
   if tileAt(game.miner_pos)=="%": 
     game.relic = True
     setTile(game.miner_pos, ".")
     print("\n"+textwrap.fill(game.realm["relic"]))
+    game.carried_money += 50*game.current_realm
 
   # Unsettle any boulders above the miner.
   boulders_released = 0
