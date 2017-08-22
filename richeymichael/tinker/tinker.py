@@ -154,7 +154,7 @@ class TinkerGame(object):
 
     def choose_location(self):
         """Automatically set the next location"""
-        location = self.data['locations'].pop(),
+        location = self.data['locations'].pop()
         self.stats['opponent'] = location
 
     def refresh_hand(self):
