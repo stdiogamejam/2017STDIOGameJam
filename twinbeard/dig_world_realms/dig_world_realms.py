@@ -1,14 +1,6 @@
-# Changes from Dig World:
-# - Replaced explit saves with checkpointing when you're at the surface.
-# - Designed levels rather than randomized, with story scenes before and after.
-# - Removed parachute and helmet.
-# - Changed the % from a gate to a relic. You need to return to the surface
-#   to advance to the next level.
-# - Added arrow and spike traps that activate after you pick up the relic.
-
-import copy
 import json
 from math import cos, sin
+import pickle
 from random import random, randint
 import re
 import textwrap
@@ -25,48 +17,41 @@ def main():
   game.move_queue    = ""    # Moves the miner has entered, yet to be executed
   game.bank_money    = 0     # How much money the miner has in the bank
   game.carried_money = 0     # How much money the miner is carrying
-  game.light         = 3     # How much of the world is displayed at once
+  game.light         = 2     # How much of the world is displayed at once
   game.max_ladders   = 5     # How many ladders the miner can carry
   game.ladders       = 5     # How many ladders the miner is carrying
-  game.relic         = False # Whether the miner has the relic
-  game.realm         = None  # The realm the miner is on
   game.current_realm = 0     # The realm number the miner is on
-  game.checkpoint    = None  # Game state to be restored when the player dies
   game.quit          = False # Whether the player has quit
-  
+
   print("Welcome to Dig World Realms!")
 
   nextRealm()
   
   while not game.quit:
-    if atSurface(): saveCheckpoint()
     determineAvailableMoves()    
     requestMoves()
+    if atSurface(): at_surface_state = pickle.dumps(game) # prepare checkpoint
+    else: at_surface_state = None
     makeMove()
+    if not atSurface() and at_surface_state!=None:
+      game.checkpoint = at_surface_state # save it
+      print("Checkpoint saved.")
     settleBoulders()
 
-def saveCheckpoint():
-  # Don't save the upcoming move sequence with the checkpoint
-  saved_moves = game.move_queue
-  game.queued_moves = ""
-  
-  # Clear out the existing checkpoint so it doesn't get saved inside the new one
-  game.checkpoint = None
-  game.checkpoint = copy.deepcopy(game)
-  
-  game.move_queue = saved_moves
-    
 def restoreCheckpoint():
-  print(textwrap.fill("You shake out of your reverie, still at the surface. " +
-                      "That won't work out -- gotta think of something else!"))
+  print(textwrap.fill("You shake out of your reverie. " +
+                      "That plan won't work -- gotta think of something else!"))
+  
   global game
-  game = copy.deepcopy(game.checkpoint)
+  game = pickle.loads(game.checkpoint)
+  
+  # Ignore previously saved moves
+  game.move_queue = ""
   
 def nextRealm():
-  with open("realms.json") as f: realms = json.load(f)
+  with open("realms.json") as f: game.realm = json.load(f)[game.current_realm]
+  game.current_realm += 1
   
-  game.realm = realms[game.current_realm]  
-
   # Have to do rotate the level design data because of the dumb way it's
   # oriented! Also we're replacing # with " because otherwise we'd have to
   # type \ before every dirt square in the level definition.
@@ -79,18 +64,16 @@ def nextRealm():
     game.world.append(s)    
 
   print("\n"+textwrap.fill(game.realm["intro"]))
- 
-  # Use next realm, wrap around if we've reached the end
-  game.current_realm = (game.current_realm+1)%len(realms)
-  
-  # Put the miner at the top of the map
+
+  game.checkpoint = None
+  game.relic = False
   game.miner_pos = Vec2(int(game.world_size.x/2), -1)
      
 # The following functions, determineAvailableMoves, requestMoves, makeMove and
 # settleBoulders, comprise the main game loop
 
-# Display game state
-def showWorld():
+def displayGameState():
+  # Display world state
   s = "\n"
   for y in range(game.miner_pos.y-game.light, game.miner_pos.y+game.light+1):
     if y < -1 or y > game.world_size.y: continue
@@ -105,14 +88,11 @@ def showWorld():
   # Display HUD
   print("Bank: $%d Carried treasure: $%d Ladders: %d Depth: %d\'" % \
     (game.bank_money, game.carried_money, game.ladders, game.miner_pos.y*10+10))
-
-def displayGameState():
-  showWorld()  
   
-  # Display available commands. The string "udlrgqe" specifies the order the
+  # Display available commands. The string "udlrge" specifies the order the
   # commands are shown in.
-  print(" ".join(["%s) %s"%(k.upper(), game.cmds[k][0]) \
-                    for k in "udlrges" if k in game.cmds]))
+  print("".join(["%s) %s"%(k.upper(), game.cmds[k][0]) \
+                    for k in "udlrqe" if k in game.cmds]))
   
   # If at surface, display available shop items. The string "bc" specifies
   # the order the items are shown in.
@@ -125,15 +105,15 @@ def determineAvailableMoves():
   # Always available commands
   game.cmds = \
   { 
-    "u": ("Go up", doGo), "d": ("Go down", doGo), "l": ("Go left", doGo),
-    "r": ("Go right", doGo), "q": ("Quit", doQuit)
+    "u": ("Go up ", doGo), "d": ("Go down ", doGo), "l": ("Go left ", doGo),
+    "r": ("Go right\n", doGo), "q": ("Quit ", doQuit)
   }
   
   # If at surface, can use the shop
   if atSurface(): 
     for item in shopItems(): game.cmds[item[0]] = ("%s) $%d %s"%item[:3], doBuy)
-  # Otherwise, can restore a checkpoint
-  else: game.cmds["e"] = ("Restore Checkpoint", doRestore)
+  if game.checkpoint!=None:
+    game.cmds["e"] = ("Restore Previous Checkpoint", doRestore)
 
 # Get commands from player, if none are queued up
 def requestMoves():
@@ -143,7 +123,7 @@ def requestMoves():
     
     # Replace sequences like 10u with uuuuuuuuuu, so the player doesn't have
     # to type u a bunch of times in a row
-    game.move_queue = re.sub(r"(\d+)([a-z])", \
+    game.move_queue = re.sub(r"(\d+)([a-zA-Z])", \
       lambda m: m.group(2)*int(m.group(1)), game.move_queue)
     
     print
@@ -257,7 +237,7 @@ def doGo(move):
   if move=="d": dir = Vec2( 0,  1)
   if move=="l": dir = Vec2(-1,  0)
   if move=="r": dir = Vec2( 1,  0)
-    
+
   new_pos = game.miner_pos.add(dir)
 
   # If climbing, try to use a ladder
@@ -283,14 +263,14 @@ def doGo(move):
   if solidAt(new_pos, "H%"):  
     # Loose treasure
     if tileAt(new_pos) == "$":
-      print("You found some treasure, worth $"+str(int(new_pos.y/5+1))+"!")
-      game.carried_money += int(new_pos.y/5+1)
+      print("You found some treasure, worth $%d!"%game.current_realm)
+      game.carried_money += game.current_realm
     # Treasure chest
     elif tileAt(new_pos) == "n":
-      if random() < 0.5:
-        print("You find $%d of treasure in the chest!" % (game.world_size.y*2))
-        game.carried_money += game.world_size.y*2
-      elif random() < 0.5:
+      if game.miner_pos.x%3==0:
+        print("You find $%d of treasure in the chest!"%(game.current_realm*12))
+        game.carried_money += game.current_realm*12
+      elif game.miner_pos.x%3==1:
         print("You find a ladder upgrade in the chest!")
         game.max_ladders += 1
         game.ladders = game.max_ladders
@@ -308,8 +288,8 @@ def doGo(move):
       game.ladders = game.max_ladders
     else:
       setTile(new_pos, ".")
-
-  was_at_surface = atSurface()      
+      
+  was_at_surface = atSurface()
   game.miner_pos = new_pos
 
   # Returning to surface with this move?
@@ -352,22 +332,25 @@ def shopItems():
     print("Lamp brightness increased!")
     
   # Build a data structure of available items in the shop
-  return [("b", 2**(game.light-2),       "Upgrade lamp brightness", buyLamp), \
+  return [("b", 2**(game.light-1),       "Upgrade lamp brightness", buyLamp), \
           ("c", 2**(game.max_ladders-4), "Upgrade ladder capacity", buyLadder)]
 
 def reachSurface():
-  if game.relic:
-    print(textwrap.fill(game.realm["exit"]))
-    nextRealm()
-  else: print("Welcome back to the surface! You can use the shop again.")
-  
   if game.carried_money>0: 
     print("You deposit $"+str(game.carried_money)+" in the bank.")
   game.bank_money += game.carried_money
   game.carried_money = 0    
-  
+
   print("You refill your ladders.")
   game.ladders = game.max_ladders
+
+  if game.relic:
+    print("\n"+textwrap.fill(game.realm["exit"]))
+    if "end" in game.realm:
+      print("\nFinal score: $"+str(game.bank_money))
+      game.quit = True
+    else: nextRealm()
+  else: print("Welcome back to the surface! You can use the shop again.")   
   
 def atSurface(): return game.miner_pos.y==-1
 
