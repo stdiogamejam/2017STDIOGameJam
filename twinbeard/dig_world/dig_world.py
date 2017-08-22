@@ -301,7 +301,7 @@ def doGo(move):
   # Actually perform the move
   game.miner_pos = new_pos
   
-  if current_tile=="%": print("You found a gate to another world!")
+  if new_tile=="%": print("You found a gate to another world!")
   
   # Unsettle any boulders above the miner.
   boulders_released = 0
