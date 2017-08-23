@@ -32,6 +32,7 @@ class TinkerGame(object):
         """open the data file and read it all into self.data"""
         with open('data.json') as data_file:
             self.data = json.load(data_file)
+            self.game_over = False
 
     def setup(self):
         """Set up the hand, shuffle the deck, give initial powers"""
@@ -136,6 +137,7 @@ class TinkerGame(object):
                 self.stats['round'] += 1
         else:
             print "You've won"
+            self.game_over = True
         return self.stats
 
     def choose_opponent(self):
@@ -277,7 +279,7 @@ def main():
     """The main python method"""
     game = TinkerGame()
     game.setup()
-    while game.calculate_points() > 0:
+    while game.calculate_points() > 0 and not game.game_over:
         game.play()
     game.end()
 
