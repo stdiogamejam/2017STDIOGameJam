@@ -1,8 +1,20 @@
 [
+  {
+    "intro": "You approach Emperor Tu Duc's tomb with dread...",
+    "relic": "As you take Emperur Tu Duc's silver skull, you hear traps activating all around the tomb. Can you escape with it?",
+    "exit": "You made it out alive!\n\nBut what will your next adventure hold?",
+    "world":
+    [
+      "-###-0-000-",
+      "#0#..$....{",
+      "###.$0$...%",
+      "}...$n$...-"
+    ]
+  },
   { 
-    "intro": "You approach Khal-Azil's tomb with dread...",
-    "relic": "As you take Khal-Azil's silver skull, you hear traps activating all around the tomb. Can you escape with it?",
-    "exit": "You made it out alive!",
+    "intro": "You approach Abdul-Azil's catacomb with dread...",
+    "relic": "As you take Abdul-Azil's jeweled chalice, you hear traps activating all around the catacomb. Can you escape with it?",
+    "exit": "You made it out alive!\n\nBut what will your next adventure hold?",
     "world":
     [
       "#...#-----------",
@@ -11,13 +23,13 @@
       "#$$##........###",
       "00$$0#.^^^.##$n{",
       "0000#0000####000",
-      "0000n$$$$###0000"
+      "0000$n$$$###0000"
     ]
   },
   { 
-    "intro": "You approach Ialma-hotep's crypt with dread...",
-    "relic": "As you take Ialma-hotep's diamond-encrusted femur, you hear traps activating all around the crypt. Can you escape with it?",
-    "exit": "You made it out alive!",
+    "intro": "You approach Imhotep's burial chamber with dread...",
+    "relic": "As you take Imhotep's diamond-encrusted femur, you hear traps activating all around the chamber. Can you escape with it?",
+    "exit": "You made it out alive!\n\nBut what will your next adventure hold?",
     "world":
     [
       "--00000----  -",
@@ -29,14 +41,29 @@
       "##...$|###0...",
       "###$${|%......",
       "..####----....",
-      ".#######......",
-      "}..#$$$#####n{"
+      ".#######.....0",
+      "}..#$$$####n{0"
     ]
   },
-   { 
-    "intro": "You approach Dave's burial chamber with dread...",
-    "relic": "As you take Dave's electroplated elbow, you hear traps activating all around the chamber. Can you escape with it?",
-    "exit": "You made it out alive!",
+  { 
+    "intro": "You approach Blackbeard's vault with dread...",
+    "relic": "As you take Blackbeard's embalmed beard, you hear traps activating all around the vault. Can you escape with it?",
+    "exit": "You made it out alive!\n\nBut what will your next adventure hold?",
+    "world":
+    [
+      "-#0----------##-",
+      "###00..|..0...#{",
+      ".###$.#|%00$$#${",
+      "0$#$###|0000$$#{",
+      "$.###$.---00$#${",
+      "###$####.##00nn{",
+      "$####$####n00^^^"
+    ]
+  },
+  { 
+    "intro": "You approach Dave's crypt with dread...",
+    "relic": "As you take Dave's electroplated elbow, you hear traps activating all around the crypt. Can you escape with it?",
+    "exit": "You made it out alive!\n\nBut what will your next adventure hold?",
     "world":
     [
       "0000000------------..-",
@@ -54,31 +81,32 @@
     ]
   },
   { 
-    "intro": "You approach Fermat's Mausoleum with dread...",
+    "intro": "You approach Fermat's Mausoleum with dread... this is the last one, you tell yourself.",
     "relic": "As you take Fermat's Last Theorem, you hear traps activating all around the Mausoleum. Can you escape with it?",
-    "exit": "You made it out alive!",
+    "exit": "You made it out alive! That's it, you're done raiding tombs.",
+    "end": true,
     "world":
     [
-      "----##--",
-      "|}0###{|",
-      "|#$$0##|",
-      "|#0.#00|",
-      "|...###|",
-      "|}0$$#{|",
-      "|.00###|",
-      "|0#####|",
-      "|#$$###|",
-      "|}#..#{|",
-      "|#00..#|",
-      "|###.n#|",
-      "|#.$$##|",
-      "|}####{|",
-      "|#..###|",
-      "|##.###|",
-      "|#$$$#.|",
-      "|}#$$.{|",
-      "|#$$...|",
-      "|##nnn%|"
+      "---##-",
+      "}0###{",
+      "#$$0##",
+      "#0.#00",
+      "...###",
+      "}0$$#{",
+      ".00###",
+      "0#####",
+      "#$$###",
+      "}#..#{",
+      "#00..#",
+      "###.n#",
+      "#.$$##",
+      "}####{",
+      "#..###",
+      "##.###",
+      "#$$$#.",
+      "}#$$.{",
+      "#$$...",
+      "##nnn%"
     ]
   }
 ]
