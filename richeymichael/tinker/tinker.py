@@ -3,6 +3,7 @@
 import json
 from operator import itemgetter
 import random
+import sys
 
 
 def header_print(output):
@@ -93,13 +94,12 @@ class TinkerGame(object):
             output += '%d) %s\n' % (count+1, option)
         output += '\nh) Help\n'
         output += 's) Status\n'
-        #output += 'q) Quit\n'
+        output += 'q) Quit\n'
         user_input = 0
         while user_input <= 0 or user_input > len(options):
             header_print(title)
             print output
-            #print "Select an option from above (1-%d, h, s, or q):" % len(options),
-            print "Select an option from above (1-%d, h, or s):" % len(options),
+            print "Select an option from above (1-%d, h, s, or q):" % len(options),
             user_input = raw_input()
             if user_input.isdigit():
                 user_input = int(user_input)
@@ -107,8 +107,8 @@ class TinkerGame(object):
                 header_print(self.data['help'])
             elif user_input == 's':
                 self.present_status()
-            #elif user_input == 'q':
-            #    pass
+            elif user_input == 'q':
+                sys.exit()
             else:
                 print "Not a valid option"
         return user_input - 1
@@ -178,6 +178,8 @@ class TinkerGame(object):
             usable_points = 0
             header_print("Your side of the struggle:")
             active_powers = []
+#            if self.stats['round'] == 1:
+#                import pdb;pdb.set_trace()
             for card in self.stats['active']:
                 print card_format(card)
                 for power in card['powers']:
@@ -224,14 +226,14 @@ class TinkerGame(object):
                         self.refresh_hand()
                         options.append('use a spell')
                 action = self.present_menu(options, title)
-                if action == 0:
+                if action == 0 and self.stats['round'] == 0:
                     header_print(
                         'You run away from %s' % self.stats['opponent']['name']
                     )
                     resolved = True
-                elif action == 1:
+                elif (action == 1 and self.stats['round'] == 0) or (action == 0 and self.stats['round'] == 1):
+                    self.refresh_hand()
                     if not self.stats['hand']:
-                        self.refresh_hand()
                         header_print(
                             'You could not overcome %s' % (
                                 self.stats['opponent']['name']
@@ -252,6 +254,8 @@ class TinkerGame(object):
                             )
                         choice = self.present_menu(option_display, title)
                         self.stats['powers'][options[choice]] -= 1
+                        if self.stats['powers'][options[choice]] == 0:
+                            self.stats['powers'].pop(options[choice], None)
                         if options[choice] in self.stats['opponent']['powers']:
                             print 'A %s spell increases your magic during this trial' % (
                                 options[choice]
