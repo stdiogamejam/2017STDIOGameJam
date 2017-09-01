@@ -1,4 +1,5 @@
 """Game entry for stdio jam"""
+from __future__ import print_function
 
 import json
 from operator import itemgetter
@@ -8,9 +9,9 @@ import sys
 
 def header_print(output):
     """A pretty header print"""
-    print "\n-----------------------------------------------------------------"
-    print output
-    print "-----------------------------------------------------------------"
+    print("\n----------------------------------------------------------------")
+    print(output)
+    print("----------------------------------------------------------------")
 
 
 def card_format(card):
@@ -71,7 +72,6 @@ class TinkerGame(object):
             output += 'Active: \n'
             for card in self.stats['active']:
                 output += card_format(card) + '\n'
-            output += '\n'
         if self.stats['discard']:
             output += '\nSpent: \n'
             for card in self.stats['discard']:
@@ -80,27 +80,28 @@ class TinkerGame(object):
         output += 'Spells: \n'
         for power in self.stats['powers']:
             output += '%s x %d\n' % (power, self.stats['powers'][power])
-        output += '\nCurrent Activity:\n'
         if self.stats['opponent']:
+            output += '\nCurrent Activity:\n'
             output += '%s' % (card_format(self.stats['opponent']))
-        else:
-            output += 'Waiting for you'
         header_print('Status')
-        print output
+        print(output)
 
     def present_menu(self, options, title='Menu:'):
         """Generic menu presentation returns index of options"""
         output = ''
         for count, option in enumerate(options):
             output += '%d) %s\n' % (count+1, option)
-        output += '\nh) Help\n'
-        output += 's) Status\n'
-        output += 'q) Quit\n'
+        output += '\nh) Help\ns) Status\nq) Quit\n'
         user_input = 0
         while user_input <= 0 or user_input > len(options):
             header_print(title)
-            print output
-            print "Select an option from above (1-%d, h, s, or q):" % len(options),
+            print(output)
+            print(
+                "Select an option from above (1-%d, h, s, or q):" % len(
+                    options
+                ),
+                end=''
+            )
             user_input = raw_input()
             if user_input.isdigit():
                 user_input = int(user_input)
@@ -111,7 +112,7 @@ class TinkerGame(object):
             elif user_input == 'q':
                 sys.exit()
             else:
-                print "Not a valid option"
+                print("Not a valid option")
         return user_input - 1
 
     def calculate_points(self):
@@ -122,7 +123,7 @@ class TinkerGame(object):
         return points
 
     def play(self):
-        """Get input from the user and calculate combat"""
+        """This checks and sets which round you're playing"""
         if self.stats['round'] == 0:
             if self.data['personalities'] and self.data['events']:
                 self.choose_opponent()
@@ -136,7 +137,7 @@ class TinkerGame(object):
             else:
                 self.stats['round'] += 1
         else:
-            print "You've won"
+            print("You've won")
             self.game_over = True
         return self.stats
 
@@ -161,7 +162,7 @@ class TinkerGame(object):
 
     def refresh_hand(self):
         """Add an amulet and reload hand from the discard pile"""
-        if not self.stats['hand']:
+        if not self.stats['hand'] and self.stats['discard']:
             header_print('Adding a magic amulet and refreshing your group')
             if self.data['aces']:
                 self.stats['discard'].append(self.data['aces'].pop())
@@ -169,28 +170,21 @@ class TinkerGame(object):
             self.stats['discard'] = []
             random.shuffle(self.stats['hand'])
 
-    def resolve_conflict(self):
-        """Resolve this conflict"""
-        self.refresh_hand()
-        free_play = self.stats['hand'].pop()
-        self.stats['active'] = [free_play]
-        resolved = False
-        magic = 0
-        while not resolved:
-            usable_points = 0
-            header_print("Your side of the struggle:")
-            active_powers = []
-#            if self.stats['round'] == 1:
-#                import pdb;pdb.set_trace()
-            for card in self.stats['active']:
-                print card_format(card)
-                for power in card['powers']:
-                    active_powers.append(power)
-                for power in card['powers']:
-                    if power in self.stats['opponent']['powers']:
-                        usable_points += card['points']
-                        break
-            print "\nRelevant strength: %d   Magic: %d   Relevant powers: %s" % (
+    def display_current_situation(self, magic):
+        """Display the active cards, the opponent, and relavant info"""
+        usable_points = 0
+        active_powers = []
+        header_print("Your side of the struggle:")
+        for card in self.stats['active']:
+            print(card_format(card))
+            for power in card['powers']:
+                active_powers.append(power)
+            for power in card['powers']:
+                if power in self.stats['opponent']['powers']:
+                    usable_points += card['points']
+                    break
+        print(
+            "\nRelevant strength: %d   Magic: %d   Relevant powers: %s" % (
                 usable_points,
                 magic,
                 ', '.join(
@@ -199,17 +193,37 @@ class TinkerGame(object):
                     ).intersection(active_powers)
                 )
             )
-            header_print("The other side of the struggle:")
-            print card_format(self.stats['opponent'])
+        )
+        header_print("The other side of the struggle:")
+        print(card_format(self.stats['opponent']))
+        return usable_points
+
+    def resolve_conflict(self):
+        """Resolve this conflict"""
+        self.refresh_hand()
+        self.stats['active'] = [self.stats['hand'].pop()]
+        resolved = False
+        magic = 0
+        # while the conflict is not resolved
+        while not resolved:
+            self.refresh_hand()
+            usable_points = self.display_current_situation(magic)
+            # Check to see if we've defeated the opponent
             if usable_points + magic >= self.stats['opponent']['points']:
+                # You beat your opponent
                 if self.stats['round'] == 0:
                     header_print(
-                        "Huzzah, you've gained %s" % self.stats['opponent']['name']
+                        "Huzzah, you've gained %s" % (
+                            self.stats['opponent']['name']
+                        )
                     )
+                    # if you defeat the opponent in round 1 you get the card
                     self.stats['discard'].append(self.stats['opponent'])
                 elif self.stats['round'] == 1:
                     header_print(
-                        "Huzzah, you've freed %s from evil" % self.stats['opponent']['name']
+                        "Huzzah, you've freed %s from evil" % (
+                            self.stats['opponent']['name']
+                        )
                     )
                 self.stats['opponent'] = None
                 resolved = True
@@ -217,24 +231,20 @@ class TinkerGame(object):
                 header_print('You have failed in your quest')
                 resolved = True
             else:
+                # You haven't won, fled, or lost so present your options
+                # and act on whatever you say to do
                 title = 'Choose your next action: '
                 options = []
+                options.append('use a spell')
                 if self.stats['round'] == 0:
                     options.append('flee')
-                if self.stats['hand']:
-                    options.append('use a spell')
-                else:
-                    if self.stats['discard']:
-                        self.refresh_hand()
-                        options.append('use a spell')
                 action = self.present_menu(options, title)
-                if action == 0 and self.stats['round'] == 0:
+                if action == 1 and self.stats['round'] == 0:
                     header_print(
                         'You run away from %s' % self.stats['opponent']['name']
                     )
                     resolved = True
-                elif (action == 1 and self.stats['round'] == 0) or (action == 0 and self.stats['round'] == 1):
-                    self.refresh_hand()
+                elif action == 0:
                     if not self.stats['hand']:
                         header_print(
                             'You could not overcome %s' % (
@@ -244,30 +254,37 @@ class TinkerGame(object):
                         self.stats['active'] = []
                         resolved = True
                     else:
-                        title = 'Select type of spell to cast'
-                        options = self.stats['powers'].keys()
-                        option_display = []
-                        for power in options:
-                            option_display.append(
-                                "%s x %d" % (
-                                    power,
-                                    self.stats['powers'][power]
-                                )
-                            )
-                        choice = self.present_menu(option_display, title)
-                        self.stats['powers'][options[choice]] -= 1
-                        if self.stats['powers'][options[choice]] == 0:
-                            self.stats['powers'].pop(options[choice], None)
-                        if options[choice] in self.stats['opponent']['powers']:
-                            print 'A %s spell increases your magic during this trial' % (
-                                options[choice]
-                            )
-                            magic += 1
-                        print 'Casting a spell...'
-                        self.stats['active'].append(self.stats['hand'].pop())
+                        magic = self.cast_spell(magic)
         for card in self.stats['active']:
             self.stats['discard'].append(card)
         self.stats['active'] = []
+
+    def cast_spell(self, magic):
+        """Use one point from your powers dict to play a card from your hand"""
+        title = 'Select type of spell to cast'
+        options = self.stats['powers'].keys()
+        option_display = []
+        for power in options:
+            option_display.append(
+                "%s x %d" % (
+                    power,
+                    self.stats['powers'][power]
+                )
+            )
+        choice = self.present_menu(option_display, title)
+        self.stats['powers'][options[choice]] -= 1
+        if self.stats['powers'][options[choice]] == 0:
+            self.stats['powers'].pop(options[choice], None)
+        if options[choice] in self.stats['opponent']['powers']:
+            print(
+                'A %s spell increases your magic during this trial' % (
+                    options[choice]
+                )
+            )
+            magic += 1
+        print('Casting a spell...')
+        self.stats['active'].append(self.stats['hand'].pop())
+        return magic
 
     def end(self):
         """End the game"""
